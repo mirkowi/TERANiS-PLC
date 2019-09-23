@@ -33,7 +33,7 @@ void TPlc::run() {
         long usDiff = (now.tv_sec - lastTime.tv_sec)*1000000 + (now.tv_usec - lastTime.tv_usec);
         usTicks += usDiff;
         // minimale Zykluszeit auf 1ms eingestellt, den Rest verschlafen
-        if ( usDiff < 1000000) usleep(1000000-usDiff);
+        if ( usDiff < 1000) usleep(1000-usDiff);
     }
     lastTime = now;
 
