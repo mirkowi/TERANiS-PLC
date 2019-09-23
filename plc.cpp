@@ -3,7 +3,7 @@
 //
 
 #include "plc.h"
-#include "plcio.h"
+#include "PlcIo.h"
 #include "teranis.h"
 #include "MModbusTCPServer.h"
 #include <time.h>
