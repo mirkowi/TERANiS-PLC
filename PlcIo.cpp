@@ -7,7 +7,9 @@
 #include <fcntl.h>
 #include <unistd.h>
 
-#include <stdio.h>
+//#include <stdio.h>
+#include <iostream>
+#include <cstring>
 
 #include "teranis.h"
 
@@ -18,6 +20,7 @@ void TPlcIo::begin() {
     /* open handle if needed */
     if (PiControlHandle_g < 0) {
         PiControlHandle_g = open("/dev/piControl0", O_RDWR);
+        if (PiControlHandle_g < 0) std::cerr << "Error: open(/dev/piControl0): " << strerror(errno) << std::endl;
     }
 }
 
@@ -51,10 +54,12 @@ void TPlcIo::read(uint32_t offset, uint32_t length) {
         /* seek */
         if (lseek(PiControlHandle_g, offset, SEEK_SET) < 0) {
             error = true;
+            std::cerr << "Error: PlcIo::read lseek(" << offset << ")" << strerror(errno) << std::endl;
         } else {
             /* read */
             int BytesRead = ::read(PiControlHandle_g, Inputs+offset, length);
             error = BytesRead < 0;
+            if (error) std::cerr << "Error: PlcIo::read(" << offset << "," << length << ")" << strerror(errno) << std::endl;
         }
     }
 
@@ -73,10 +78,12 @@ void TPlcIo::write(uint32_t offset, uint32_t length) {
         /* seek */
         if (lseek(PiControlHandle_g, offset, SEEK_SET) < 0) {
             error = true;
+            std::cerr << "Error: PlcIo::write lseek(" << offset << ")" << strerror(errno) << std::endl;
         } else {
             /* write */
             int BytesRead = ::write(PiControlHandle_g, Outputs+offset, length);
             error = BytesRead < 0;
+            if (error) std::cerr << "Error: PlcIo::write(" << offset << "," << length << ")" << strerror(errno) << std::endl;
         }
     }
 }
