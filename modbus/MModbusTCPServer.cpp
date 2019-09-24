@@ -22,6 +22,13 @@
 #define MODBUS_FC_WRITE_REGISTER 6              //implemented
 #define MODBUS_FC_WRITE_MULTIPLE_COILS 15
 #define MODBUS_FC_WRITE_MULTIPLE_REGISTERS 16   //implemented
+// Extensions
+#define MODBUS_FC_READ_OUTPUT_REGISTERS 31      //implemented
+#define MODBUS_FC_READ_RFLAGS 32                //implemented
+#define MODBUS_FC_READ_SFLAGS 33                //implemented
+#define MODBUS_FC_WRITE_OUTPUT_REGISTERS 41
+#define MODBUS_FC_WRITE_RFLAGS 42
+#define MODBUS_FC_WRITE_SFLAGS 43
 //
 // MODBUS Error Codes
 //
@@ -40,7 +47,6 @@
 #define MODBUS_TCP_FUNC         7
 #define MODBUS_TCP_REGISTER_START   8
 #define MODBUS_TCP_REGISTER_NUMBER  10
-
 
 #ifdef ARDUINO
 #define MODBUS_CLIENTS_MAX 2
@@ -194,14 +200,14 @@ void TMModbusTCPServer::receive(CLIENTTYPE &client) {
                 }
                 MessageLength = ByteDataLength + 9;
                 client.write((const uint8_t *) ByteArray, MessageLength);
-#ifdef MODBUSDEBUG
+                #ifdef MODBUSDEBUG
                 DEBUGPRINT("TX: ");
                 for (uint8_t thisByte = 0; thisByte <= MessageLength; thisByte++) {
                     DEBUGPRINTHEX(ByteArray[thisByte]);
                     DEBUGPRINT("-");
                 }
                 DEBUGPRINTLN("");
-#endif
+                #endif
             } else {
                 // Fehlercode zurückmelden
                 byteEC = MODBUS_EC_ILLEGAL_DATA_ADDRESS;
@@ -222,14 +228,14 @@ void TMModbusTCPServer::receive(CLIENTTYPE &client) {
                 }
                 MessageLength = ByteDataLength + 9;
                 client.write((const uint8_t *) ByteArray, MessageLength);
-#ifdef MODBUSDEBUG
+                #ifdef MODBUSDEBUG
                 DEBUGPRINT("TX: ");
                 for (uint8_t thisByte = 0; thisByte <= MessageLength; thisByte++) {
                     DEBUGPRINTHEX(ByteArray[thisByte]);
                     DEBUGPRINT("-");
                 }
                 DEBUGPRINTLN("");
-#endif
+                #endif
             } else {
                 // Fehlercode zurückmelden
                 byteEC = MODBUS_EC_ILLEGAL_DATA_ADDRESS;
@@ -244,7 +250,7 @@ void TMModbusTCPServer::receive(CLIENTTYPE &client) {
                 ByteArray[5] = 6; //Number of bytes after this one.
                 MessageLength = 12;
                 client.write((const uint8_t *) ByteArray, MessageLength);
-#ifdef MODBUSDEBUG
+                #ifdef MODBUSDEBUG
                 DEBUGPRINT("TX: ");
                 for (uint8_t thisByte = 0; thisByte <= MessageLength; thisByte++) {
                     DEBUGPRINT(ByteArray[thisByte]);
@@ -255,7 +261,7 @@ void TMModbusTCPServer::receive(CLIENTTYPE &client) {
                 DEBUGPRINT(Start);
                 DEBUGPRINT("=");
                 DEBUGPRINTHEX((Start * 2 + 1 < PLC_F_SIZE) ? word(Flags[Start * 2],Flags[Start * 2 + 1]) : -1);
-#endif
+                #endif
             } else {
                 // Fehlercode zurückmelden
                 byteEC = MODBUS_EC_ILLEGAL_DATA_ADDRESS;
@@ -273,7 +279,7 @@ void TMModbusTCPServer::receive(CLIENTTYPE &client) {
                 }
                 MessageLength = 12;
                 client.write((const uint8_t *) ByteArray, MessageLength);
-#ifdef MODBUSDEBUG
+                #ifdef MODBUSDEBUG
                 DEBUGPRINT("TX: ");
                 for (uint8_t thisByte = 0; thisByte <= MessageLength; thisByte++) {
                     DEBUGPRINTHEX(ByteArray[thisByte]);
@@ -284,7 +290,84 @@ void TMModbusTCPServer::receive(CLIENTTYPE &client) {
                 DEBUGPRINT(Start);
                 DEBUGPRINT("=");
                 DEBUGPRINTLN(WordDataLength);
-#endif
+                #endif
+            } else {
+                // Fehlercode zurückmelden
+                byteEC = MODBUS_EC_ILLEGAL_DATA_ADDRESS;
+            }
+            break;
+        case MODBUS_FC_READ_OUTPUT_REGISTERS:
+            ByteDataLength = WordDataLength * 2;
+            ByteArray[5] = ByteDataLength + 3; //Number of bytes after this one.
+            ByteArray[8] = ByteDataLength;     //Number of bytes after this one (or number of bytes of data).
+            if (((Start + WordDataLength) * 2) < PLC_Q_SIZE) {
+                for (int i = 0; i < WordDataLength; i++) {
+                    // Register von Flags umspeichern, Bytes dabei drehen
+                    ByteArray[9 + i * 2] = Outputs[(Start + i) * 2 + 1];
+                    ByteArray[10 + i * 2] = Outputs[(Start + i) * 2];
+                }
+                MessageLength = ByteDataLength + 9;
+                client.write((const uint8_t *) ByteArray, MessageLength);
+                #ifdef MODBUSDEBUG
+                DEBUGPRINT("TX: ");
+                for (uint8_t thisByte = 0; thisByte <= MessageLength; thisByte++) {
+                    DEBUGPRINTHEX(ByteArray[thisByte]);
+                    DEBUGPRINT("-");
+                }
+                DEBUGPRINTLN("");
+                #endif
+            } else {
+                // Fehlercode zurückmelden
+                byteEC = MODBUS_EC_ILLEGAL_DATA_ADDRESS;
+            }
+            break;
+
+        case MODBUS_FC_READ_RFLAGS:
+            ByteDataLength = WordDataLength * 2;
+            ByteArray[5] = ByteDataLength + 3; //Number of bytes after this one.
+            ByteArray[8] = ByteDataLength;     //Number of bytes after this one (or number of bytes of data).
+            if (((Start + WordDataLength) * 2) < PLC_R_SIZE) {
+                for (int i = 0; i < WordDataLength; i++) {
+                    // Register von Flags umspeichern, Bytes dabei drehen
+                    ByteArray[9 + i * 2] = RFlags[(Start + i) * 2 + 1];
+                    ByteArray[10 + i * 2] = RFlags[(Start + i) * 2];
+                }
+                MessageLength = ByteDataLength + 9;
+                client.write((const uint8_t *) ByteArray, MessageLength);
+                #ifdef MODBUSDEBUG
+                DEBUGPRINT("TX: ");
+                for (uint8_t thisByte = 0; thisByte <= MessageLength; thisByte++) {
+                    DEBUGPRINTHEX(ByteArray[thisByte]);
+                    DEBUGPRINT("-");
+                }
+                DEBUGPRINTLN("");
+                #endif
+            } else {
+                // Fehlercode zurückmelden
+                byteEC = MODBUS_EC_ILLEGAL_DATA_ADDRESS;
+            }
+            break;
+
+        case MODBUS_FC_READ_SFLAGS:
+            ByteDataLength = WordDataLength * 2;
+            ByteArray[5] = ByteDataLength + 3; //Number of bytes after this one.
+            ByteArray[8] = ByteDataLength;     //Number of bytes after this one (or number of bytes of data).
+            if (((Start + WordDataLength) * 2) < PLC_S_SIZE) {
+                for (int i = 0; i < WordDataLength; i++) {
+                    // Register von Flags umspeichern, Bytes dabei drehen
+                    ByteArray[9 + i * 2] = SFlags[(Start + i) * 2 + 1];
+                    ByteArray[10 + i * 2] = SFlags[(Start + i) * 2];
+                }
+                MessageLength = ByteDataLength + 9;
+                client.write((const uint8_t *) ByteArray, MessageLength);
+                #ifdef MODBUSDEBUG
+                DEBUGPRINT("TX: ");
+                for (uint8_t thisByte = 0; thisByte <= MessageLength; thisByte++) {
+                    DEBUGPRINTHEX(ByteArray[thisByte]);
+                    DEBUGPRINT("-");
+                }
+                DEBUGPRINTLN("");
+                #endif
             } else {
                 // Fehlercode zurückmelden
                 byteEC = MODBUS_EC_ILLEGAL_DATA_ADDRESS;
