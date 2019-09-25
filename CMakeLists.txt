@@ -26,4 +26,4 @@ add_executable(TERANiS_PLC
 	plc.cpp 
 	plc.h 
 	PlcTask.cpp 
-	PlcTask.h PlcIo.cpp PlcIo.h)
+	PlcTask.h PlcIo.cpp PlcIo.h PlcIoRevPi.cpp PlcIoRevPi.h)

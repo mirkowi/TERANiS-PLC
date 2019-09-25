@@ -12,7 +12,6 @@ class TPlc {
 private:
     TPlcTask plcTask;
     timeval lastTime;
-    long int usTicks;
     /// Modbus-Port
     int mbport;
 public:

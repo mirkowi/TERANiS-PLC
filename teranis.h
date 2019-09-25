@@ -74,7 +74,18 @@ typedef struct
   extern uint8_t SFlags[PLC_S_SIZE];
   #define S(typ,idx) TREF(typ,SFlags,idx)
   #define SX(idx,bitnr) XREF(SFlags,idx,bitnr)
+
+  // Systemvariablen
+  // Mikrosekunden Ticks zum Zyklusbeginn
+  #define usTicks S(int64_t, 10)
+  // aktuelle Zykluszeit
+  #define cycleActMs S(uint32_t, 18)
+  // minimale Zykluszeit
+  #define minCycleActMs S(uint32_t, 22)
+  // maximale Zykluszeit
+  #define maxCycleActMs S(uint32_t, 26)
 #endif
+
 
 void setup_teranis();
 void loop_teranis();

@@ -9,21 +9,18 @@
 #include <stdint.h>
 
 class TPlcIo {
-private:
-    void read(uint32_t offset, uint32_t length);
-    void write(uint32_t offset, uint32_t length);
 public:
     /// IO-System Initialisieren
-    void begin();
+    virtual void begin() {};
 
     /// Lesen der Eingaenge in das Prozessabbild
-    void read();
+    virtual void read() {};
 
-    /// Schreiben der Ausgaegne aus dem Prozessabbild
-    void write();
+    /// Schreiben der Ausgaenge aus dem Prozessabbild
+    virtual void write() {};
 
     /// IO-System schliessen
-    void end();
+    virtual void end() {};
 };
 
 #endif // PLCIO_H

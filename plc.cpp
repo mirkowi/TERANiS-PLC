@@ -3,17 +3,19 @@
 //
 
 #include "plc.h"
-#include "PlcIo.h"
 #include "teranis.h"
 #include "MModbusTCPServer.h"
-#include <time.h>
 #include <sys/time.h>
+
+// Hier den Typ des IO-Systems anpassen
+#include "PlcIoRevPi.h"
+
+// Singleton Instanz des IO-Systems
+// Hier den Typ des IO-Systems anpassen
+TPlcIoRevPi plcIo;
 
 // Singleton Instanz des MODBUS-Servers
 TMModbusTCPServer modbusTcpServer;
-
-// Singleton Instanz des IO-Systems
-TPlcIo plcIo;
 
 void TPlc::begin() {
     plcIo.begin();
@@ -44,10 +46,9 @@ void TPlc::run() {
     plcTask.run();
 
     // Zykluszeiten System-Flags schreiben
-    S(uint32_t,10) = plcTask.getCycleActMs();
-    S(uint32_t,14) = plcTask.getMinCycleActMs();
-    S(uint32_t,18) = plcTask.getMaxCycleActMs();
-    S(int64_t,22) = usTicks; // Mikrosekunden
+    cycleActMs = plcTask.getCycleActMs();
+    minCycleActMs = plcTask.getMinCycleActMs();
+    maxCycleActMs = plcTask.getMaxCycleActMs();
 
     // Write Outputs
     plcIo.write();

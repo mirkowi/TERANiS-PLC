@@ -14,7 +14,7 @@ private:
     /// minimale Zykluszeit in Millisekunden
     unsigned maxCycleSetMs;
     /// gemerkte letzte Zeit
-    clock_t lastclock;
+    timeval lastTime;
 public:
     unsigned int getMinCycleSetMs() const {
         return minCycleSetMs;
@@ -44,12 +44,12 @@ private:
     /// maximale Zykluszeit in Millisekunden
     unsigned maxCycleActMs;
 public:
-    TPlcTask() : minCycleSetMs(1), maxCycleSetMs(300), lastclock(0), cycleActMs(0), minCycleActMs(0),
-                 maxCycleActMs(0) {};
+    TPlcTask() : minCycleSetMs(1), maxCycleSetMs(300), cycleActMs(0), minCycleActMs(0),
+                 maxCycleActMs(0) { lastTime.tv_sec = 0; };
 
     TPlcTask(unsigned minCycleMs, unsigned maxCycleMs) : minCycleSetMs(minCycleMs), maxCycleSetMs(maxCycleMs),
-                                                         lastclock(0), cycleActMs(0), minCycleActMs(0),
-                                                         maxCycleActMs(0) {};
+                                                         cycleActMs(0), minCycleActMs(0),
+                                                         maxCycleActMs(0) { lastTime.tv_sec = 0; };
 
     /// Initialsierung
     void begin();

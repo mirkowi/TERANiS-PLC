@@ -391,5 +391,13 @@ void TMModbusTCPServer::receive(CLIENTTYPE &client) {
         ByteArray[5] = 4; // Datenbytes nach diesem Byte
         MessageLength = MODBUS_TCP_REGISTER_START + 1;
         client.write((const uint8_t *) ByteArray, MessageLength);
+        #ifdef MODBUSDEBUG
+        DEBUGPRINT("TX: ");
+        for (uint8_t thisByte = 0; thisByte <= MessageLength; thisByte++) {
+            DEBUGPRINTHEX(ByteArray[thisByte]);
+            DEBUGPRINT("-");
+        }
+        DEBUGPRINTLN("");
+        #endif
     }
 }
