@@ -22,8 +22,10 @@ void TPlc::begin() {
     setup_teranis();
     plcTask.begin();
     plcTask.begin();
-    modbusTcpServer.setMbport(mbport);
-    modbusTcpServer.begin();
+    if (mbport>0) {
+        modbusTcpServer.setMbport(mbport);
+        modbusTcpServer.begin();
+    }
 }
 
 void TPlc::run() {
@@ -35,7 +37,7 @@ void TPlc::run() {
         long usDiff = (now.tv_sec - lastTime.tv_sec)*1000000 + (now.tv_usec - lastTime.tv_usec);
         usTicks += usDiff;
         // minimale Zykluszeit auf 1ms eingestellt, den Rest verschlafen
-        if ( usDiff < 1000) usleep(1000-usDiff);
+        if ( usDiff/1000 < minCycleSetMs) usleep(minCycleSetMs*1000-usDiff);
     }
     lastTime = now;
 
@@ -53,8 +55,10 @@ void TPlc::run() {
     // Write Outputs
     plcIo.write();
 
-    // Client Communication
-    modbusTcpServer.run();
+    if (mbport>0) {
+        // Client Communication
+        modbusTcpServer.run();
+    }
 }
 
 

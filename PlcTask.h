@@ -11,30 +11,26 @@ class TPlcTask {
 private:
     /// minimale Zykluszeit in Millisekunden
     unsigned minCycleSetMs;
+
     /// minimale Zykluszeit in Millisekunden
     unsigned maxCycleSetMs;
+
     /// gemerkte letzte Zeit
     timeval lastTime;
 public:
-    unsigned int getMinCycleSetMs() const {
-        return minCycleSetMs;
-    }
+    unsigned int getMinCycleSetMs() const { return minCycleSetMs; }
 
-    unsigned int getMaxCycleSetMs() const {
-        return maxCycleSetMs;
-    }
+    void setMinCycleSetMs(unsigned int minCycleSetMs) { this->minCycleSetMs = minCycleSetMs; }
 
-    unsigned int getCycleActMs() const {
-        return cycleActMs;
-    }
+    unsigned int getMaxCycleSetMs() const { return maxCycleSetMs; }
 
-    unsigned int getMinCycleActMs() const {
-        return minCycleActMs;
-    }
+    void setMaxCycleSetMs(unsigned int maxCycleSetMs) { this->maxCycleSetMs = maxCycleSetMs; }
 
-    unsigned int getMaxCycleActMs() const {
-        return maxCycleActMs;
-    }
+    unsigned int getCycleActMs() const { return cycleActMs; }
+
+    unsigned int getMinCycleActMs() const { return minCycleActMs; }
+
+    unsigned int getMaxCycleActMs() const { return maxCycleActMs; }
 
 private:
     /// aktuelle Zykluszeit in Millisekunden

@@ -5,6 +5,7 @@
 #include "PlcTask.h"
 #include "teranis.h"
 #include <sys/time.h>
+#include <iostream>
 
 void TPlcTask::begin() {
 
@@ -21,6 +22,9 @@ void TPlcTask::run() {
             cycleActMs = usDiff/1000;
             if (minCycleActMs==0 || minCycleActMs>cycleActMs) minCycleActMs=cycleActMs;
             if (maxCycleActMs<cycleActMs) maxCycleActMs=cycleActMs;
+            if (cycleActMs>maxCycleSetMs) {
+                std::cerr << "Warnung: PlcTask Zykluszeitueberschreitung " << cycleActMs << "ms" << std::endl;
+            }
         }
         lastTime = now;
         loop_teranis();
