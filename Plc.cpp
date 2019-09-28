@@ -2,7 +2,7 @@
 // Created by mirko on 14.09.2019.
 //
 
-#include "plc.h"
+#include "Plc.h"
 #include "teranis.h"
 #include "MModbusTCPServer.h"
 #include <sys/time.h>

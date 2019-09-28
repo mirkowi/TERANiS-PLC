@@ -3,7 +3,7 @@
 #include <iostream>
 #include <csignal>
 #include <cstring>
-#include "plc.h"
+#include "Plc.h"
 
 bool terminate = false;
 
@@ -21,7 +21,7 @@ int main(int argc, char *argv[]) {
         TPlc plc;
         // simple Argumentpruefung
         if (argc==3 && strcmp(argv[1],"-mbport")==0) plc.setMbport(atoi(argv[2]));
-        // Initialisieren der PLC-Umpgebung
+        // Initialisieren der PLC-Umgebung
         plc.begin();
         // PLC-Zyklus so lange ausfuehren bis SIGTERM eintrifft, oder Exception
         while (!terminate) plc.run();

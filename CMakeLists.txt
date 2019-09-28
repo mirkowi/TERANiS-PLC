@@ -22,8 +22,8 @@ add_executable(TERANiS_PLC
         modbus/TCPServer.cpp
         modbus/TCPServer.h
         modbus/TCPClient.cpp
-        modbus/TCPClient.h 
-	plc.cpp 
-	plc.h 
+        modbus/TCPClient.h
+        Plc.cpp
+        Plc.h
 	PlcTask.cpp 
 	PlcTask.h PlcIo.cpp PlcIo.h PlcIoRevPi.cpp PlcIoRevPi.h)
