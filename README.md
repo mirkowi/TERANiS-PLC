@@ -3,6 +3,8 @@ Soft-SPS zum Softwareprodukt TERANiS der AVI-GmbH
 
 Eine Beschreibung zu TERANiS findet man hier: https://www.teranis.de
 
+Hinweise zur Installation und Konfiguration stehen im Projekt-Wiki.
+
 ## Einleitung
 
 TERANiS wird für die technologische Beschreibung von Steuerungsabläufen verwendet. Es existieren Übersetzer für verschiedene Zielsprachen aus der industriellen Steuerungswelt. Es gibt aber auch einen Übersetzer in die Sprache C. Damit kann mit einer Runtime-Umgebung eine Software-Steuerung (Soft-PLC) gebaut werden.
