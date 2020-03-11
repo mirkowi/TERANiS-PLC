@@ -31,6 +31,10 @@ public:
     void begin();
 
     void run();
+
+    void end();
+    
+    ~TMModbusTCPServer() { end(); };
 };
 
 #endif

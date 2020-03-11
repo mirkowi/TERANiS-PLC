@@ -7,6 +7,8 @@ include_directories(.)
 include_directories(avicstd/h)
 include_directories(modbus)
 
+link_libraries(mraa)
+
 add_executable(TERANiS_PLC
         main.cpp
         modbus/MModbusTCPServer.cpp
@@ -25,5 +27,10 @@ add_executable(TERANiS_PLC
         modbus/TCPClient.h
         Plc.cpp
         Plc.h
-	PlcTask.cpp 
-	PlcTask.h PlcIo.cpp PlcIo.h PlcIoRevPi.cpp PlcIoRevPi.h)
+        PlcTask.cpp 
+        PlcTask.h 
+        PlcIo.cpp 
+        PlcIo.h 
+        PlcIoMraa.cpp 
+        PlcIoMraa.h
+)

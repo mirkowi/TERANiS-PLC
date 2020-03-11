@@ -8,11 +8,11 @@
 #include <sys/time.h>
 
 // Hier den Typ des IO-Systems anpassen
-#include "PlcIoRevPi.h"
+#include "PlcIoMraa.h"
 
 // Singleton Instanz des IO-Systems
 // Hier den Typ des IO-Systems anpassen
-TPlcIoRevPi plcIo;
+TPlcIoMraa plcIo;
 
 // Singleton Instanz des MODBUS-Servers
 TMModbusTCPServer modbusTcpServer;
@@ -20,7 +20,6 @@ TMModbusTCPServer modbusTcpServer;
 void TPlc::begin() {
     plcIo.begin();
     setup_teranis();
-    plcTask.begin();
     plcTask.begin();
     if (mbport>0) {
         modbusTcpServer.setMbport(mbport);
@@ -32,12 +31,14 @@ void TPlc::run() {
     timeval now;
     gettimeofday(&now,0);
     // Aus dem Zeitvergleich Ticks ausrechnen
-    if (lastTime.tv_sec == 0) usTicks=0;
+    if (lastTime.tv_sec == 0) S_usTicks=0;
     else {
         long usDiff = (now.tv_sec - lastTime.tv_sec)*1000000 + (now.tv_usec - lastTime.tv_usec);
-        usTicks += usDiff;
-        // minimale Zykluszeit auf 1ms eingestellt, den Rest verschlafen
-        if ( usDiff/1000 < minCycleSetMs) usleep(minCycleSetMs*1000-usDiff);
+        S_usTicks += usDiff;
+        // Wartezeit bis zum minimalen Zyklus berechnen
+        lastSleep = (long)minCycleSetMs*1000-usDiff+lastSleep;
+        // Den Rest der minimalen Zykluszeit verschlafen
+        if ( lastSleep>0 ) usleep(lastSleep); else lastSleep=0;
     }
     lastTime = now;
 
@@ -48,9 +49,9 @@ void TPlc::run() {
     plcTask.run();
 
     // Zykluszeiten System-Flags schreiben
-    cycleActMs = plcTask.getCycleActMs();
-    minCycleActMs = plcTask.getMinCycleActMs();
-    maxCycleActMs = plcTask.getMaxCycleActMs();
+    S_cycleActMs = plcTask.getCycleActMs();
+    S_minCycleActMs = plcTask.getMinCycleActMs();
+    S_maxCycleActMs = plcTask.getMaxCycleActMs();
 
     // Write Outputs
     plcIo.write();
@@ -61,4 +62,11 @@ void TPlc::run() {
     }
 }
 
+void TPlc::end() {
+    plcIo.end();
+    plcTask.end();
+    if (mbport>0) {
+        modbusTcpServer.end();
+    }
+}
 

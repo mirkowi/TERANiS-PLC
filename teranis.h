@@ -77,13 +77,13 @@ typedef struct
 
   // Systemvariablen
   // Mikrosekunden Ticks zum Zyklusbeginn
-  #define usTicks S(int64_t, 10)
+  #define S_usTicks S(int64_t, 10)
   // aktuelle Zykluszeit
-  #define cycleActMs S(uint32_t, 18)
+  #define S_cycleActMs S(uint32_t, 18)
   // minimale Zykluszeit
-  #define minCycleActMs S(uint32_t, 22)
+  #define S_minCycleActMs S(uint32_t, 22)
   // maximale Zykluszeit
-  #define maxCycleActMs S(uint32_t, 26)
+  #define S_maxCycleActMs S(uint32_t, 26)
 #endif
 
 

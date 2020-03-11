@@ -8,7 +8,7 @@
 // Register kommen von TERANiS
 #include "teranis.h"
 
-#define MODBUSDEBUG     // uncomment to enable Debug output
+//#define MODBUSDEBUG     // uncomment to enable Debug output
 
 //
 // MODBUS Function Codes
@@ -73,11 +73,9 @@ void TMModbusTCPServer::begin() {
         DEBUGPRINTLN(" ...");
     } else {
 #endif
-#ifdef MODBUSDEBUG
       DEBUGPRINT("Listening on ");
       DEBUGPRINT(mbport);
       DEBUGPRINTLN(" ...");
-#endif
     }
 }
 
@@ -181,7 +179,7 @@ void TMModbusTCPServer::receive(CLIENTTYPE &client) {
         DEBUGPRINT("-");
     }
     DEBUGPRINTLN("");
-    DEBUGPRINT("Funktionscode: ");
+    DEBUGPRINT("Funktionscode: 0x");
     DEBUGPRINTHEX(byteFN);
     DEBUGPRINTLN("");
 #endif
@@ -400,4 +398,16 @@ void TMModbusTCPServer::receive(CLIENTTYPE &client) {
         DEBUGPRINTLN("");
         #endif
     }
+}
+
+void TMModbusTCPServer::end() {
+#ifdef ARDUINO
+    // TODO: Check Client Disconnect
+    // ModbusServer.end();
+#else
+    for (int i = 0; i < MODBUS_CLIENTS_MAX; i++) {
+      ModbusClient[i].disconnect();
+    }
+    ModbusServer.disconnect();
+#endif
 }

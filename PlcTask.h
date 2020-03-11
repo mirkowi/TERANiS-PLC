@@ -52,6 +52,11 @@ public:
 
     /// laufender Zyklus
     void run();
+
+    /// Aufraeumen
+    void end() {};
+    
+    ~TPlcTask() { end(); }
 };
 
 

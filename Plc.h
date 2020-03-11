@@ -12,6 +12,7 @@ class TPlc {
 private:
     TPlcTask plcTask;
     timeval lastTime;
+    long lastSleep;
     /// minimale Zykluszeit in Millisekunden
     unsigned minCycleSetMs;
     /// Modbus-Port
@@ -26,7 +27,7 @@ public:
     }
 
 public:
-    TPlc() : minCycleSetMs(1), mbport(502) { lastTime.tv_sec=0; };
+    TPlc() : minCycleSetMs(1), mbport(502), lastSleep(0) { lastTime.tv_sec=0; };
 
     unsigned int getMinCycleSetMs() const { return minCycleSetMs; }
 
@@ -37,6 +38,11 @@ public:
 
     /// laufender Zyklus der PLC-Umgebung
     void run();
+
+    /// Aufraeumen vor dem Ende PLC-Umgebung
+    void end();
+    
+    ~TPlc() { end(); };
 };
 
 
