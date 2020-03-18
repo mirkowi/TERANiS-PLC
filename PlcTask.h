@@ -5,7 +5,7 @@
 #ifndef PLCTASK_H
 #define PLCTASK_H
 
-#include <time.h>
+#include <sys/time.h>
 
 class TPlcTask {
 private:

@@ -6,7 +6,7 @@
 #define PLC_H
 
 #include "PlcTask.h"
-#include <time.h>
+#include <sys/time.h>
 
 class TPlc {
 private:
