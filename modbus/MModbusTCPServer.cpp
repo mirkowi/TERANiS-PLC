@@ -2,6 +2,8 @@
 
 #ifdef ARDUINO
 #include <Arduino.h>
+#else
+#include <sys/time.h>
 #endif
 
 #include "MModbusTCPServer.h"
@@ -52,10 +54,12 @@
 #define MODBUS_CLIENTS_MAX 2
 WiFiServer ModbusServer(MODBUS_PORT);
 WiFiClient ModbusClient[MODBUS_CLIENTS_MAX];
+int64_t ModbusClientLastTimes[MODBUS_CLIENTS_MAX];
 #else
 #define MODBUS_CLIENTS_MAX 20
 TTCPServer ModbusServer;
 TTCPClient ModbusClient[MODBUS_CLIENTS_MAX];
+timeval ModbusClientLastTimes[MODBUS_CLIENTS_MAX];
 #endif
 
 void TMModbusTCPServer::begin() {
@@ -67,15 +71,18 @@ void TMModbusTCPServer::begin() {
         DEBUGPRINT("Fehler bei Bind ");
         DEBUGPRINT(ModbusServer.GetLastError())
         DEBUGPRINTLN(" ...");
+        gettimeofday(&lastErrorTime,0);
     } else if (!ModbusServer.Listen()) {
         DEBUGPRINT("Fehler bei Listen ");
         DEBUGPRINT(ModbusServer.GetLastError())
         DEBUGPRINTLN(" ...");
+        gettimeofday(&lastErrorTime,0);
     } else {
 #endif
       DEBUGPRINT("Listening on ");
       DEBUGPRINT(mbport);
       DEBUGPRINTLN(" ...");
+      lastErrorTime.tv_sec=0;
     }
 }
 
@@ -120,9 +127,17 @@ void TMModbusTCPServer::run() {
         }
     }
 #else
-    // Cleanup disconnected session
+    timeval now;
+    gettimeofday(&now,0);
+    if (lastErrorTime.tv_sec!=0) {
+        if (now.tv_sec-lastErrorTime.tv_sec > 60) {
+            // Nach 60s erneut initialisieren
+            begin();
+        }
+    }
+    // Cleanup disconnected session or 60s inactive
     for (int i = 0; i < MODBUS_CLIENTS_MAX; i++) {
-        if (ModbusClient[i].isReady() && !ModbusClient[i].isConnected()) {
+        if (ModbusClient[i].isReady() && (!ModbusClient[i].isConnected() || (now.tv_sec - ModbusClientLastTimes[i].tv_sec)>60)) {
             DEBUGPRINT("Modbus Client disconnected ... terminate session ");
             DEBUGPRINTLN(i + 1);
             ModbusClient[i].disconnect();
@@ -141,20 +156,23 @@ void TMModbusTCPServer::run() {
         if (ModbusServer.Accept(ModbusClient[clientIndex])) {
             DEBUGPRINT("New Modbus Client connected on session ");
             DEBUGPRINTLN(clientIndex+1);
+            // Zeit merken
+            ModbusClientLastTimes[clientIndex] = now;
         }
     }
 
     // receive from Clients
     for (uint8_t i = 0; i < MODBUS_CLIENTS_MAX; i++) {
         if (ModbusClient[i].isReady()) {
-            receive(ModbusClient[i]);
+            // Wenn etwas empfangen, dann Zeit merken
+            if (receive(ModbusClient[i])) ModbusClientLastTimes[i] = now;
         }
     }
 #endif
 }
 
-void TMModbusTCPServer::receive(CLIENTTYPE &client) {
-    if (!client.available()) return;
+bool TMModbusTCPServer::receive(CLIENTTYPE &client) {
+    if (!client.available()) return false;
     uint8_t byteFN = MODBUS_FC_NONE;
     uint8_t byteEC = MODBUS_EC_NONE;
     int Start;
@@ -398,6 +416,7 @@ void TMModbusTCPServer::receive(CLIENTTYPE &client) {
         DEBUGPRINTLN("");
         #endif
     }
+    return true;
 }
 
 void TMModbusTCPServer::end() {

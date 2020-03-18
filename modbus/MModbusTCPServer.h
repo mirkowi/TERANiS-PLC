@@ -16,17 +16,24 @@
 class TMModbusTCPServer {
 private:
     int mbport;
-
+#ifndef ARDUINO
+    timeval lastErrorTime;
+#endif
     uint16_t word(uint8_t h, uint8_t l) { return ((uint16_t) h) << 8 | l; }
 
-    void receive(CLIENTTYPE &client);
+    /// Empfang fuer einen Client bearbeiten. Liefert true, wenn ein Telegramm bearbeitet wurde.
+    bool receive(CLIENTTYPE &client);
 
 public:
     int getMbport() const { return mbport; };
 
     void setMbport(int mbport) { TMModbusTCPServer::mbport = mbport; };
 
-    TMModbusTCPServer() : mbport(502) {};
+    TMModbusTCPServer() : mbport(502) {
+#ifndef ARDUINO
+        lastErrorTime.tv_sec=0;
+#endif
+    };
 
     void begin();
 
