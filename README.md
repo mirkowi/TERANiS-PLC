@@ -1,7 +1,7 @@
 # TERANiS-PLC
 Soft-SPS zum Softwareprodukt TERANiS der AVI-GmbH
 
-Eine Beschreibung zu TERANiS findet man hier: https://www.teranis.de
+Eine Beschreibung zu TERANiS findet man hier: https://www.avi-gmbh.com/produkte/teranis/
 
 Hinweise zur Installation und Konfiguration stehen im Projekt-Wiki.
 
