@@ -1,53 +1,64 @@
-//
-// Created by mirko on 14.09.2019.
-//
-
 #ifndef PLC_H
 #define PLC_H
 
+#include "PlcIo.h"
 #include "PlcTask.h"
+#include "PlcMemory.h"
 
-#ifdef _WIN32
-#include <ctime>
-#else
-#include <sys/time.h>
-#endif
-
-class TPlc {
-private:
-    TPlcTask plcTask;
-    timeval lastTime;
-    long lastSleep;
-    /// minimale Zykluszeit in Millisekunden
-    unsigned minCycleSetMs;
-    /// Modbus-Port
-    int mbport;
+/**
+ * Implementierung einer Softwarebasierten SPS.
+ * Der Speicher der SPS ist programmglobal, weil der gesamte Prozess EINE SPS beschreibt.
+ * Diese Klasse dient daher nur der Übersichtlichkeit
+ *
+ * @authors Mirko Wittek, Tim Trense
+ */
+class Plc {
 public:
-    int getMbport() const {
-        return mbport;
-    }
+    /**
+     * SPS-Zustand
+     */
+    enum State {
+        RUN, STOP, ERROR
+    };
 
-    void setMbport(int mbport) {
-        TPlc::mbport = mbport;
-    }
+    Plc(PlcIo *_io);
 
-public:
-    TPlc() : minCycleSetMs(1), mbport(502), lastSleep(0) { lastTime.tv_sec=0; };
+    ~Plc();
 
-    unsigned int getMinCycleSetMs() const { return minCycleSetMs; }
+    State getState() const;
 
-    void setMinCycleSetMs(unsigned int minCycleSetMs) { this->minCycleSetMs = minCycleSetMs; }
+    PlcIo *getIo() const;
 
-    /// Setup der PLC-Umgebung
+    PlcTask *getTask() const;
+
+    void setTask(PlcTask *task);
+
+    /**
+     * Setup der PLC-Umgebung
+     */
     void begin();
 
-    /// laufender Zyklus der PLC-Umgebung
-    void run();
+    /**
+     * Laufender Zyklus der PLC-Umgebung
+     */
+    bool cycle();
 
-    /// Aufraeumen vor dem Ende PLC-Umgebung
+    /**
+     * Aufräumen vor dem Ende PLC-Umgebung
+     */
     void end();
-    
-    ~TPlc() { end(); };
+
+private:
+    /**
+     * SPS-Zustand
+     */
+    State state;
+    /**
+     * I/O Logik der SPS
+     */
+    PlcIo *io;
+
+    PlcTask *task; //TODO: make a list that runs async to one another
 };
 
 

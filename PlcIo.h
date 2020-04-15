@@ -1,26 +1,27 @@
-//
-// Created by mirko on 19.09.2019.
-//
-
 #ifndef PLCIO_H
 #define PLCIO_H
 
+#include "PlcMemory.h"
+
 /**
  * Standard Schnittstelle zum Uebertragen der IO-Signale in das Prozessabbild
+ *
+ * @authors Mirko Wittek, Tim Trense
  */
-class TPlcIo {
+class PlcIo {
 public:
     /// IO-System Initialisieren
-    virtual void begin() {};
+    virtual void begin();
 
     /// Lesen der Eingaenge in das Prozessabbild
-    virtual void read() {};
+    virtual void read();
 
     /// Schreiben der Ausgaenge aus dem Prozessabbild
-    virtual void write() {};
+    virtual void write();
 
     /// IO-System schliessen
-    virtual void end() {};
+    virtual void end();
+
 };
 
-#endif // PLCIO_H
+#endif

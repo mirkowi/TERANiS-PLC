@@ -8,10 +8,12 @@
 #include "PlcIo.h"
 #include <cstdint>
 
-class TPlcIoRevPi : public TPlcIo {
+class PlcIoRevPi : public PlcIo {
 private:
     void read(uint32_t offset, uint32_t length);
+
     void write(uint32_t offset, uint32_t length);
+
 public:
     /// IO-System Initialisieren
     virtual void begin();

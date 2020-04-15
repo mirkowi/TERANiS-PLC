@@ -43,10 +43,11 @@ set(SOURCES ${SOURCES} modbus/TCPSocket.h)
 set(SOURCES ${SOURCES} modbus/TCPServer.cpp)
 set(SOURCES ${SOURCES} modbus/TCPServer.h)
 set(SOURCES ${SOURCES} modbus/TCPClient.cpp)
-set(SOURCES ${SOURCES} teranis.cpp)
 set(SOURCES ${SOURCES} Plc.cpp)
-set(SOURCES ${SOURCES} PlcTask.cpp)
 set(SOURCES ${SOURCES} PlcIo.cpp)
+set(SOURCES ${SOURCES} PlcTask.cpp)
+set(SOURCES ${SOURCES} PlcMemory.cpp)
+set(SOURCES ${SOURCES} TeranisTask.cpp)
 
 add_executable(TERANiS_PLC ${SOURCES})
 

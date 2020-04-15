@@ -1,30 +1,40 @@
-//
-// Created by mirko on 07.03.2020.
-//
 
 #ifndef PLCIOMRAA_H
 #define PLCIOMRAA_H
 
 #include "PlcIo.h"
+#include <mraa.h>
 
 // Libmraa ist ausserdem einzubinden
 // mraa ist eine C/C++ library fuer die IO auf Galileo, Edison & anderen Platformen
 // z.B. geeignet fuer Siemens IOT2000
-
-class TPlcIoMraa : public TPlcIo {
+class PlcIoMraa : public PlcIo {
 public:
+
+    // Pass-Through-Constructor
+    PlcIoMraa(
+            unsigned int _inputLength,
+            unsigned int _outputLength,
+            unsigned int _flagsLength,
+            unsigned int _systemFlagsLength
+    );
+
+    /// Override
     /// IO-System Initialisieren
-    virtual void begin();
+    void begin() override;
 
+    /// Override
     /// Lesen der Eingaenge in das Prozessabbild
-    virtual void read();
+    void read() override;
 
+    /// Override
     /// Schreiben der Ausgaenge aus dem Prozessabbild
-    virtual void write();
+    void write(const) override;
 
+    /// Override
     /// IO-System schliessen
-    virtual void end();
+    void end() override;
 };
 
 
-#endif // PLCIOREVPI_H
+#endif

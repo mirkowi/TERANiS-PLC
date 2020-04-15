@@ -1,32 +1,80 @@
-//
-// Created by mirko on 15.09.2019.
-//
-
 #include "PlcTask.h"
-#include "teranis.h"
-#include <sys/time.h>
+#include <chrono>
 #include <iostream>
 
-void TPlcTask::begin() {
-
+PlcTask::PlcTask() : minCycleTime(1), maxCycleTime(300), actualCycleTime(0), actualMinCycleTime(0),
+                     actualMaxCycleTime(0) {
 }
 
-void TPlcTask::run() {
-    timeval now;
-    gettimeofday(&now,0);
-    // Aus dem Zeitvergleich Differenz in Mikrosekunden ausrechnen
-    long usDiff = (now.tv_sec - lastTime.tv_sec)*1000000 + (now.tv_usec - lastTime.tv_usec);
-    if (lastTime.tv_sec == 0 || usDiff/1000 >= minCycleSetMs) {
-        if (lastTime.tv_sec!=0) {
-            // Zykluszeit messen und min/max setzen
-            cycleActMs = usDiff/1000;
-            if (minCycleActMs==0 || minCycleActMs>cycleActMs) minCycleActMs=cycleActMs;
-            if (maxCycleActMs<cycleActMs) maxCycleActMs=cycleActMs;
-            if (cycleActMs>maxCycleSetMs) {
-                std::cerr << "Warnung: PlcTask Zykluszeitueberschreitung " << cycleActMs << "ms" << std::endl;
-            }
-        }
-        lastTime = now;
-        loop_teranis();
+PlcTask::PlcTask(unsigned int minCycleMs, unsigned int maxCycleMs) : minCycleTime(minCycleMs),
+                                                                     maxCycleTime(maxCycleMs),
+                                                                     actualCycleTime(0), actualMinCycleTime(0),
+                                                                     actualMaxCycleTime(0) {
+};
+
+unsigned int PlcTask::getMinCycleSetMs() const {
+    return minCycleTime;
+}
+
+void PlcTask::setMinCycleSetMs(unsigned int minCycleSetMs) {
+    this->minCycleTime = minCycleSetMs;
+    if (this->maxCycleTime < this->minCycleTime) {
+        this->maxCycleTime = this->minCycleTime + 1;
     }
 }
+
+unsigned int PlcTask::getMaxCycleSetMs() const {
+    return maxCycleTime;
+}
+
+void PlcTask::setMaxCycleSetMs(unsigned int maxCycleSetMs) {
+    this->maxCycleTime = maxCycleSetMs;
+}
+
+unsigned int PlcTask::getCycleActMs() const {
+    return actualCycleTime;
+}
+
+unsigned int PlcTask::getMinCycleActMs() const {
+    return actualMinCycleTime;
+}
+
+unsigned int PlcTask::getMaxCycleActMs() const {
+    return actualMaxCycleTime;
+}
+
+void PlcTask::begin() {
+    lastCycleTimepoint = std::chrono::system_clock::now();
+    beginImpl();
+}
+
+void PlcTask::run() {
+    timepoint now = std::chrono::system_clock::now();
+
+    actualCycleTime = (now - lastCycleTimepoint).count() * 1000 / std::nano::den;
+
+    if (actualCycleTime >= minCycleTime) {
+        // so schnell wie möglich setzen, damit Berechnungszeit des Cycle nicht die Aufrufzeit beeinflusst
+        lastCycleTimepoint = now;
+
+        if (actualMinCycleTime == 0 || actualMinCycleTime > actualCycleTime) actualMinCycleTime = actualCycleTime;
+        if (actualMaxCycleTime < actualCycleTime) actualMaxCycleTime = actualCycleTime;
+        if (actualCycleTime > maxCycleTime) {
+            std::cerr << "Warnung: PlcTask Zykluszeitueberschreitung " << actualCycleTime << "ms" << std::endl;
+        }
+
+        runImpl();
+    }
+}
+
+void PlcTask::end() {
+    endImpl();
+}
+
+void PlcTask::runImpl() {
+    // may be overridden by subclass
+}
+
+void PlcTask::beginImpl() {}
+
+void PlcTask::endImpl() {}

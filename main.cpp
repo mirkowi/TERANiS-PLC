@@ -1,37 +1,71 @@
-// This ist the main function
-
 #include <iostream>
 #include <csignal>
 #include <cstring>
 #include "Plc.h"
+#include "TeranisTask.h"
+
+#include "MModbusTCPServer.h"
+
+#if defined(ENV_MRAA)
+#include "PlcIoMraa.h"
+#elif defined(ENV_REVPI)
+#include "PlcIoRevPi.h"
+#elif defined(ENV_WINDOWS)
+#warning No I/O implementation in this environment yet
+#else
+#warning Unknown Environment
+#endif
 
 bool terminate = false;
 
-//---------------------------------------------------------------------------
 void signalSigterm(int signum) {
-    // While-Schleife unterbrechen
     terminate = true;
 }
 
-//---------------------------------------------------------------------------
 int main(int argc, char *argv[]) {
     try {
-        // register signal and signal handler
         signal(SIGTERM, signalSigterm);
-        TPlc plc;
+
+        TMModbusTCPServer modbusTcpServer;
+
+        // TERANIS Code laden
+        PlcTask *task = new TeranisTask();
+        task->setMinCycleSetMs(1000);
+
+        // PLC vorbereiten
+        PlcIo *io;
+#if defined(ENV_MRAA)
+        io = new PlcIoMraa();
+#elif defined(ENV_REVPI)
+        io = new PlcIoRevPi();
+#elif defined(ENV_WINDOWS)
+        io = new PlcIo(); //TODO: where to map i/o here?
+#else
+        io = new PlcIo();
+#endif
+
+        Plc plc(io);
+        plc.setTask(task);
+
         // simple Argumentpruefung
-        if (argc==3 && strcmp(argv[1],"-mbport")==0) plc.setMbport(atoi(argv[2]));
-        // Initialisieren der PLC-Umgebung
-        plc.setMinCycleSetMs(50); // 50ms minimale Zykluszeit
+        if (argc == 3 && strcmp(argv[1], "-mbport") == 0) modbusTcpServer.setMbport(atoi(argv[2]));
+
+        modbusTcpServer.begin();
         plc.begin();
+
         // PLC-Zyklus so lange ausfuehren bis SIGTERM eintrifft, oder Exception
-        while (!terminate) plc.run();
+        while (!terminate) {
+            plc.cycle();
+            modbusTcpServer.run();
+        }
+
         plc.end();
-        return 1;
+        modbusTcpServer.end();
+
+        return 0;
     }
     catch (...) {
         std::cerr << " Es ist ein unbekannter Fehler aufgetreten." << std::endl;
+        return 1;
     }
-    return 0;
 }
-//---------------------------------------------------------------------------

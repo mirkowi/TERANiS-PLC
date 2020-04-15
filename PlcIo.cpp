@@ -1,6 +1,11 @@
-//
-// Created by mirko on 19.09.2019.
-//
-
 #include "PlcIo.h"
 
+void PlcIo::begin() {
+}
+
+void PlcIo::end() {
+}
+
+void PlcIo::read() {}
+
+void PlcIo::write() {}

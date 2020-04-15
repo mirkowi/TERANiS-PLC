@@ -2,10 +2,10 @@
 /* Sie wird automatisch generiert von TERANiS-Studio, bitte Aenderungen nur dort vornehmen.*/
 /* oder durch eigenen Code ersetzen... */
 
-void Cycle ()
-{
+#include <iostream>
+
+void Cycle() {
     // testweise ein Zyklenzaehler
-    F(uint32_t,30)++;
+    F(uint32_t, 30)++;
+    std::cout << F(uint32_t, 30) << std::endl;
 }
-
-
