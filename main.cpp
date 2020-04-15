@@ -30,7 +30,8 @@ int main(int argc, char *argv[]) {
 
         // TERANIS Code laden
         PlcTask *task = new TeranisTask();
-        task->setMinCycleSetMs(1000);
+        task->setMinCycleSetMs(1);
+        task->setMaxCycleSetMs(100); // sollte größer als plc.getCooldownCycleTime() sein
 
         // PLC vorbereiten
         PlcIo *io;
@@ -45,6 +46,7 @@ int main(int argc, char *argv[]) {
 #endif
 
         Plc plc(io);
+        plc.setCooldownCycleTime(50);
         plc.setTask(task);
 
         // simple Argumentpruefung

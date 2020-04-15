@@ -49,7 +49,7 @@ void PlcTask::begin() {
 }
 
 void PlcTask::run() {
-    timepoint now = std::chrono::system_clock::now();
+    plc_timepoint now = std::chrono::system_clock::now();
 
     actualCycleTime = (now - lastCycleTimepoint).count() * 1000 / std::nano::den;
 

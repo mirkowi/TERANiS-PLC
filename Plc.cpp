@@ -1,4 +1,5 @@
 #include "Plc.h"
+#include <thread>
 
 Plc::Plc(PlcIo *io) {
     state = STOP;
@@ -38,6 +39,14 @@ PlcIo *Plc::getIo() const {
     return io;
 }
 
+unsigned int Plc::getCooldownCycleTime() const {
+    return cooldownCycleTime;
+}
+
+void Plc::setCooldownCycleTime(unsigned int _cooldownCycleTime) {
+    cooldownCycleTime = _cooldownCycleTime;
+}
+
 void Plc::begin() {
     // Bei begin() bleibt der Speicher im Zustand in dem er ist
 
@@ -61,6 +70,8 @@ bool Plc::cycle() {
     if (state != RUN) {
         return false;
     }
+
+    std::this_thread::sleep_for(std::chrono::milliseconds(cooldownCycleTime));
 
     try {
         io->read();

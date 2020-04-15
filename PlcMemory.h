@@ -30,5 +30,7 @@ typedef struct {
     unsigned char x7 : 1;
 } T8Bits;
 
+#include <chrono>
+typedef std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds> plc_timepoint;
 
 #endif

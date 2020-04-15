@@ -2,14 +2,17 @@
 #ifndef TERANIS_PLC_PLCTASK_H
 #define TERANIS_PLC_PLCTASK_H
 
-#include <ctime>
-#include <chrono>
 #include "PlcMemory.h"
 
+/**
+ * Basisklasse für SPS-Tasks. Durch diese Basisklasse wird das Timing der Ausführung des Tasks implementiert
+ *
+ * @authors Mirko Wittek, Tim Trense
+ */
+ //TODO: aktuell kann die SPS nur einen einzigen Task ausführen,
+ // aber es sollten auch mehrere Tasks (vllt. sogar in jeweils eigenen Threads) ausgeführt werden können
 class PlcTask {
 public:
-    typedef std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds> timepoint;
-
     PlcTask();
 
     PlcTask(unsigned int minCycleMs, unsigned int maxCycleMs);
@@ -60,7 +63,7 @@ private:
     unsigned int actualMaxCycleTime;
 
     /// gemerkte letzte Zeit
-    timepoint lastCycleTimepoint;
+    plc_timepoint lastCycleTimepoint;
 };
 
 #endif

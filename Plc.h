@@ -33,6 +33,10 @@ public:
 
     void setTask(PlcTask *task);
 
+    unsigned int getCooldownCycleTime() const;
+
+    void setCooldownCycleTime(unsigned int _cooldownCycleTime);
+
     /**
      * Setup der PLC-Umgebung
      */
@@ -49,6 +53,10 @@ public:
     void end();
 
 private:
+    /**
+     * Intervall in Millisekunden das nach der Ausführung von cycle() eingehalten wird, um die CPU-Last zu begrenzen
+     */
+    unsigned int cooldownCycleTime;
     /**
      * SPS-Zustand
      */
