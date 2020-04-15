@@ -3,12 +3,14 @@
 #ifdef ARDUINO
 #include <Arduino.h>
 #else
+
 #include <sys/time.h>
+
 #endif
 
 #include "MModbusTCPServer.h"
 // Register kommen von TERANiS
-#include "teranis.h"
+#include "PlcMemory.h"
 
 //#define MODBUSDEBUG     // uncomment to enable Debug output
 
@@ -71,18 +73,18 @@ void TMModbusTCPServer::begin() {
         DEBUGPRINT("Fehler bei Bind ");
         DEBUGPRINT(ModbusServer.GetLastError())
         DEBUGPRINTLN(" ...");
-        gettimeofday(&lastErrorTime,0);
+        gettimeofday(&lastErrorTime, 0);
     } else if (!ModbusServer.Listen()) {
         DEBUGPRINT("Fehler bei Listen ");
         DEBUGPRINT(ModbusServer.GetLastError())
         DEBUGPRINTLN(" ...");
-        gettimeofday(&lastErrorTime,0);
+        gettimeofday(&lastErrorTime, 0);
     } else {
 #endif
-      DEBUGPRINT("Listening on ");
-      DEBUGPRINT(mbport);
-      DEBUGPRINTLN(" ...");
-      lastErrorTime.tv_sec=0;
+        DEBUGPRINT("Listening on ");
+        DEBUGPRINT(mbport);
+        DEBUGPRINTLN(" ...");
+        lastErrorTime.tv_sec = 0;
     }
 }
 
@@ -128,17 +130,17 @@ void TMModbusTCPServer::run() {
     }
 #else
     timeval now;
-    gettimeofday(&now,0);
-    if (lastErrorTime.tv_sec!=0) {
-        if (now.tv_sec-lastErrorTime.tv_sec > 60) {
+    gettimeofday(&now, 0);
+    if (lastErrorTime.tv_sec != 0) {
+        if (now.tv_sec - lastErrorTime.tv_sec > 60) {
             // Nach 60s erneut initialisieren
             begin();
         }
     }
     // Cleanup disconnected session or 60s inactive
     for (int i = 0; i < MODBUS_CLIENTS_MAX; i++) {
-        if (ModbusClient[i].isReady() && (!ModbusClient[i].isConnected() || (now.tv_sec - ModbusClientLastTimes[i].tv_sec)>60)) {
-            DEBUGPRINT("Modbus Client disconnected ... terminate session ");
+        if (ModbusClient[i].isReady() && (now.tv_sec - ModbusClientLastTimes[i].tv_sec) > 10) {
+            DEBUGPRINT("Modbus Client timed out on session ");
             DEBUGPRINTLN(i + 1);
             ModbusClient[i].disconnect();
         }
@@ -155,7 +157,7 @@ void TMModbusTCPServer::run() {
     if (clientIndex >= 0) {
         if (ModbusServer.Accept(ModbusClient[clientIndex])) {
             DEBUGPRINT("New Modbus Client connected on session ");
-            DEBUGPRINTLN(clientIndex+1);
+            DEBUGPRINTLN(clientIndex + 1);
             // Zeit merken
             ModbusClientLastTimes[clientIndex] = now;
         }
@@ -216,14 +218,14 @@ bool TMModbusTCPServer::receive(CLIENTTYPE &client) {
                 }
                 MessageLength = ByteDataLength + 9;
                 client.write((const uint8_t *) ByteArray, MessageLength);
-                #ifdef MODBUSDEBUG
+#ifdef MODBUSDEBUG
                 DEBUGPRINT("TX: ");
                 for (uint8_t thisByte = 0; thisByte <= MessageLength; thisByte++) {
                     DEBUGPRINTHEX(ByteArray[thisByte]);
                     DEBUGPRINT("-");
                 }
                 DEBUGPRINTLN("");
-                #endif
+#endif
             } else {
                 // Fehlercode zurückmelden
                 byteEC = MODBUS_EC_ILLEGAL_DATA_ADDRESS;
@@ -244,14 +246,14 @@ bool TMModbusTCPServer::receive(CLIENTTYPE &client) {
                 }
                 MessageLength = ByteDataLength + 9;
                 client.write((const uint8_t *) ByteArray, MessageLength);
-                #ifdef MODBUSDEBUG
+#ifdef MODBUSDEBUG
                 DEBUGPRINT("TX: ");
                 for (uint8_t thisByte = 0; thisByte <= MessageLength; thisByte++) {
                     DEBUGPRINTHEX(ByteArray[thisByte]);
                     DEBUGPRINT("-");
                 }
                 DEBUGPRINTLN("");
-                #endif
+#endif
             } else {
                 // Fehlercode zurückmelden
                 byteEC = MODBUS_EC_ILLEGAL_DATA_ADDRESS;
@@ -266,7 +268,7 @@ bool TMModbusTCPServer::receive(CLIENTTYPE &client) {
                 ByteArray[5] = 6; //Number of bytes after this one.
                 MessageLength = 12;
                 client.write((const uint8_t *) ByteArray, MessageLength);
-                #ifdef MODBUSDEBUG
+#ifdef MODBUSDEBUG
                 DEBUGPRINT("TX: ");
                 for (uint8_t thisByte = 0; thisByte <= MessageLength; thisByte++) {
                     DEBUGPRINT(ByteArray[thisByte]);
@@ -277,7 +279,7 @@ bool TMModbusTCPServer::receive(CLIENTTYPE &client) {
                 DEBUGPRINT(Start);
                 DEBUGPRINT("=");
                 DEBUGPRINTHEX((Start * 2 + 1 < PLC_F_SIZE) ? word(Flags[Start * 2],Flags[Start * 2 + 1]) : -1);
-                #endif
+#endif
             } else {
                 // Fehlercode zurückmelden
                 byteEC = MODBUS_EC_ILLEGAL_DATA_ADDRESS;
@@ -295,7 +297,7 @@ bool TMModbusTCPServer::receive(CLIENTTYPE &client) {
                 }
                 MessageLength = 12;
                 client.write((const uint8_t *) ByteArray, MessageLength);
-                #ifdef MODBUSDEBUG
+#ifdef MODBUSDEBUG
                 DEBUGPRINT("TX: ");
                 for (uint8_t thisByte = 0; thisByte <= MessageLength; thisByte++) {
                     DEBUGPRINTHEX(ByteArray[thisByte]);
@@ -306,7 +308,7 @@ bool TMModbusTCPServer::receive(CLIENTTYPE &client) {
                 DEBUGPRINT(Start);
                 DEBUGPRINT("=");
                 DEBUGPRINTLN(WordDataLength);
-                #endif
+#endif
             } else {
                 // Fehlercode zurückmelden
                 byteEC = MODBUS_EC_ILLEGAL_DATA_ADDRESS;
@@ -324,14 +326,14 @@ bool TMModbusTCPServer::receive(CLIENTTYPE &client) {
                 }
                 MessageLength = ByteDataLength + 9;
                 client.write((const uint8_t *) ByteArray, MessageLength);
-                #ifdef MODBUSDEBUG
+#ifdef MODBUSDEBUG
                 DEBUGPRINT("TX: ");
                 for (uint8_t thisByte = 0; thisByte <= MessageLength; thisByte++) {
                     DEBUGPRINTHEX(ByteArray[thisByte]);
                     DEBUGPRINT("-");
                 }
                 DEBUGPRINTLN("");
-                #endif
+#endif
             } else {
                 // Fehlercode zurückmelden
                 byteEC = MODBUS_EC_ILLEGAL_DATA_ADDRESS;
@@ -350,14 +352,14 @@ bool TMModbusTCPServer::receive(CLIENTTYPE &client) {
                 }
                 MessageLength = ByteDataLength + 9;
                 client.write((const uint8_t *) ByteArray, MessageLength);
-                #ifdef MODBUSDEBUG
+#ifdef MODBUSDEBUG
                 DEBUGPRINT("TX: ");
                 for (uint8_t thisByte = 0; thisByte <= MessageLength; thisByte++) {
                     DEBUGPRINTHEX(ByteArray[thisByte]);
                     DEBUGPRINT("-");
                 }
                 DEBUGPRINTLN("");
-                #endif
+#endif
             } else {
                 // Fehlercode zurückmelden
                 byteEC = MODBUS_EC_ILLEGAL_DATA_ADDRESS;
@@ -376,14 +378,14 @@ bool TMModbusTCPServer::receive(CLIENTTYPE &client) {
                 }
                 MessageLength = ByteDataLength + 9;
                 client.write((const uint8_t *) ByteArray, MessageLength);
-                #ifdef MODBUSDEBUG
+#ifdef MODBUSDEBUG
                 DEBUGPRINT("TX: ");
                 for (uint8_t thisByte = 0; thisByte <= MessageLength; thisByte++) {
                     DEBUGPRINTHEX(ByteArray[thisByte]);
                     DEBUGPRINT("-");
                 }
                 DEBUGPRINTLN("");
-                #endif
+#endif
             } else {
                 // Fehlercode zurückmelden
                 byteEC = MODBUS_EC_ILLEGAL_DATA_ADDRESS;
@@ -407,14 +409,14 @@ bool TMModbusTCPServer::receive(CLIENTTYPE &client) {
         ByteArray[5] = 4; // Datenbytes nach diesem Byte
         MessageLength = MODBUS_TCP_REGISTER_START + 1;
         client.write((const uint8_t *) ByteArray, MessageLength);
-        #ifdef MODBUSDEBUG
+#ifdef MODBUSDEBUG
         DEBUGPRINT("TX: ");
         for (uint8_t thisByte = 0; thisByte <= MessageLength; thisByte++) {
             DEBUGPRINTHEX(ByteArray[thisByte]);
             DEBUGPRINT("-");
         }
         DEBUGPRINTLN("");
-        #endif
+#endif
     }
     return true;
 }
@@ -425,7 +427,7 @@ void TMModbusTCPServer::end() {
     // ModbusServer.end();
 #else
     for (int i = 0; i < MODBUS_CLIENTS_MAX; i++) {
-      ModbusClient[i].disconnect();
+        ModbusClient[i].disconnect();
     }
     ModbusServer.disconnect();
 #endif
