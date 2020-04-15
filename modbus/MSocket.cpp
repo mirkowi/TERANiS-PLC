@@ -7,7 +7,7 @@ int TMSocket::RefCount = 0;
 
 void TMSocket::Start()
 {
-  #if (_Windows)
+  #if defined(_WIN32) or (_Windows)
   if (RefCount==0)
   {
     WSADATA wsa;

@@ -6,7 +6,12 @@
 #define PLC_H
 
 #include "PlcTask.h"
+
+#ifdef _WIN32
+#include <ctime>
+#else
 #include <sys/time.h>
+#endif
 
 class TPlc {
 private:

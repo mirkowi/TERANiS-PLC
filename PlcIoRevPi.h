@@ -6,6 +6,7 @@
 #define PLCIOREVPI_H
 
 #include "PlcIo.h"
+#include <cstdint>
 
 class TPlcIoRevPi : public TPlcIo {
 private:

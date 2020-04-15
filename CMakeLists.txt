@@ -7,30 +7,48 @@ include_directories(.)
 include_directories(avicstd/h)
 include_directories(modbus)
 
-link_libraries(mraa)
+set(SOURCES main.cpp)
 
-add_executable(TERANiS_PLC
-        main.cpp
-        modbus/MModbusTCPServer.cpp
-        modbus/MRegExp.cpp
-        modbus/MRegExp.h
-        modbus/MSocket.cpp
-        modbus/MSocket.h
-        modbus/platform.h
-        modbus/TCPSocket.cpp
-        modbus/TCPSocket.h
-        teranis.cpp
-        teranis.h
-        modbus/TCPServer.cpp
-        modbus/TCPServer.h
-        modbus/TCPClient.cpp
-        modbus/TCPClient.h
-        Plc.cpp
-        Plc.h
-        PlcTask.cpp 
-        PlcTask.h 
-        PlcIo.cpp 
-        PlcIo.h 
-        PlcIoMraa.cpp 
-        PlcIoMraa.h
-)
+add_compile_definitions(ENVIRONMENT=${env})
+
+if ("${env}" STREQUAL "")
+    set(env windows)
+endif ()
+
+message(STATUS Environment=${env})
+
+if ("${env}" MATCHES "mraa")
+    set(SOURCES ${SOURCES} PlcIoMraa.cpp)
+    add_compile_definitions(ENV_MRAA)
+    link_libraries(mraa)
+endif ()
+
+if ("${env}" MATCHES "revpi")
+    set(SOURCES ${SOURCES} PlcIoRevPi.cpp)
+    add_compile_definitions(ENV_REVPI)
+endif ()
+
+if ("${env}" MATCHES "windows")
+    add_compile_definitions(ENV_WINDOWS)
+    # todo: where to map I/O to?
+endif ()
+
+link_libraries(ws2_32.lib)
+
+set(SOURCES ${SOURCES} modbus/MModbusTCPServer.cpp)
+set(SOURCES ${SOURCES} modbus/MRegExp.cpp)
+set(SOURCES ${SOURCES} modbus/MSocket.cpp)
+set(SOURCES ${SOURCES} modbus/TCPSocket.cpp)
+set(SOURCES ${SOURCES} modbus/TCPSocket.h)
+set(SOURCES ${SOURCES} modbus/TCPServer.cpp)
+set(SOURCES ${SOURCES} modbus/TCPServer.h)
+set(SOURCES ${SOURCES} modbus/TCPClient.cpp)
+set(SOURCES ${SOURCES} teranis.cpp)
+set(SOURCES ${SOURCES} Plc.cpp)
+set(SOURCES ${SOURCES} PlcTask.cpp)
+set(SOURCES ${SOURCES} PlcIo.cpp)
+
+add_executable(TERANiS_PLC ${SOURCES})
+
+#force 64 bit mode:
+#set_target_properties(TERANiS_PLC PROPERTIES COMPILE_FLAGS "-m64" LINK_FLAGS "-m64")

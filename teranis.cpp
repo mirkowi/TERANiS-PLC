@@ -22,6 +22,7 @@
 
 // Von TERANiS generierten Code einbinden
 #ifdef __cplusplus
+  #include <iostream>
   namespace teranis {
     #include "teranis_code.h"
   };

@@ -4,8 +4,8 @@
 #define MSocketH
 
 #ifdef _WIN32
-  #include <windows.h>
   #include <winsock2.h>
+  #include <windows.h>
   typedef int socklen_t;
 #else
   #include <stdio.h>

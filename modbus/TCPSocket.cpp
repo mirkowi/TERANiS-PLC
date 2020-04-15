@@ -4,7 +4,9 @@
 #include <string>
 
 #ifdef _WIN32
+
 #include <io.h>
+
 #else
 
 #include <sys/io.h>
@@ -123,7 +125,11 @@ void TTCPSocket::connect() {
     if (descriptor == 0) if (!create()) return;
 
     SOCKADDR_IN addr;
+#ifdef _WIN32
+    memset(&addr, 0, sizeof(SOCKADDR_IN)); // zuerst alles auf 0 setzten
+#else
     std::memset(&addr, 0, sizeof(SOCKADDR_IN)); // zuerst alles auf 0 setzten
+#endif
     addr.sin_family = AF_INET;
     addr.sin_port = htons(port);
 
@@ -172,7 +178,7 @@ void TTCPSocket::send(const void *buffer, unsigned int bufferlen) {
 
 //---------------------------------------------------------------------------
 int TTCPSocket::recv(void *buffer, unsigned int bufferlen) {
-    int result = ::recv(this->descriptor, buffer, bufferlen, 0);
+    int result = ::recv(this->descriptor, (char *) buffer, bufferlen, 0);
 #ifdef _WIN32
     // Wenn nur keine Daten, dann einfach 0 zurueckliefern
     if (result==SOCKET_ERROR && WSAGetLastError()==WSAEWOULDBLOCK) return 0;
@@ -267,7 +273,14 @@ bool TTCPSocket::create() {
 bool TTCPSocket::isConnected() {
     if (!isReady()) return false;
     char buf;
-    int result = ::recv(descriptor, &buf, 1, MSG_PEEK | MSG_DONTWAIT);
+    int flags =
+#ifdef _WIN32
+    MSG_PEEK
+#else
+    MSG_PEEK | MSG_DONTWAIT
+#endif
+    ;
+    int result = ::recv(descriptor, &buf, 1, flags);
     if (result >= 0 || errno == EAGAIN) return true;
     return false;
 }
@@ -275,7 +288,14 @@ bool TTCPSocket::isConnected() {
 bool TTCPSocket::available() {
     if (!isReady()) return false;
     char buf;
-    int result = ::recv(descriptor, &buf, 1, MSG_PEEK | MSG_DONTWAIT);
+    int flags =
+#ifdef _WIN32
+     MSG_PEEK
+#else
+     MSG_PEEK | MSG_DONTWAIT
+#endif
+     ;
+    int result = ::recv(descriptor, &buf, 1, flags);
     if (result > 0) return true;
     return false;
 }

@@ -5,9 +5,9 @@
 #ifndef PLCIO_H
 #define PLCIO_H
 
-// Standard Schnittstelle zum Uebertragen der IO-Signale in das Prozessabbild
-#include <stdint.h>
-
+/**
+ * Standard Schnittstelle zum Uebertragen der IO-Signale in das Prozessabbild
+ */
 class TPlcIo {
 public:
     /// IO-System Initialisieren

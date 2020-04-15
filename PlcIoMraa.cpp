@@ -6,13 +6,9 @@
 
 #include <mraa.h>
 #include <iostream>
+#include <cstdint>
 
 #include "teranis.h"
-
-/*
-Beispiel fuer das Einlesen von Signalen mit der 10xDI Karte von Siemens auf dem IOT2000.
-Hier wird die USER-LED als Ausgang geschaltet. Dies geht nicht gleichzeitig mit der Nutzung des Eingangs DI9.
-*/
 
 mraa_gpio_context di0 = NULL;
 mraa_gpio_context di1 = NULL;
@@ -33,13 +29,13 @@ mraa_gpio_context initPin(int pin, mraa_gpio_dir_t dir)
     std::cerr << "Failed to initialize pin " << pin << std::endl;
   }
   else
-  {    
+  {
     if (mraa_gpio_dir(context, dir)!=MRAA_SUCCESS) {
       std::cerr << "Failed to set direction of pin " << pin << std::endl;
     }
-  }    
+  }
   return context;
-}  
+}
 
 void TPlcIoMraa::begin() {
   led = initPin(13,MRAA_GPIO_OUT);

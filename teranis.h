@@ -1,6 +1,5 @@
 #ifndef teranis_h
 #define teranis_h
-#include <stdint.h>
 #include "avicstd/h/avi_c_std.h"
 
 // Define the size in Bytes for different PLC memory types
@@ -33,10 +32,10 @@ typedef struct
     static_assert(S>=I, "index exceeds size of array");
     static_assert(S>=(I+sizeof(T)), "index and size of type exceeds size of array");
     return ((T*)(&(A[I])));
-  }; 
+  };
 
   // Macrodefinition
-  #define TREF(typ,arr,idx) (*TeArrayElement<typ,sizeof(arr),idx>(arr))   
+  #define TREF(typ,arr,idx) (*TeArrayElement<typ,sizeof(arr),idx>(arr))
 #else
   // Die Standard-C Variante ohne Indexüberprüfung
   #define TREF(typ,arr,idx) (*((typ*)(&(arr[idx]))))

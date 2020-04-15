@@ -1,2 +1,8 @@
 /cmake-build-debug
 /cmake-build-wsl_debug
+/cmake-build-debug/
+/cmake-build-debug--denvwindows/
+/cmake-build-default/
+/cmake-build-minsizerel/
+/cmake-build-release/
+/cmake-build-relwithdebinfo/
