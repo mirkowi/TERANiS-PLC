@@ -7,11 +7,11 @@
 #define INC_GUARD_AVI_DATATYPE_BOOL_H
 
 #ifndef __cplusplus
-  typedef int bool;
-  #define true 1
-  #define TRUE 1
-  #define false 0
-  #define FALSE 0
+typedef int bool;
+#define true 1
+#define TRUE 1
+#define false 0
+#define FALSE 0
 #endif
 
 #endif
