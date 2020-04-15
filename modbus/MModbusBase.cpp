@@ -30,72 +30,70 @@ Adressbereich 40001 bis 49999 => z.B. 4x0001 bis 4x9999
 ***/
 
 //---------------------------------------------------------------------------
-uint16_t TMModbusBase::Endian_swap(uint16_t x)
-{
-  return (x>>8) | (x<<8);
+uint16_t TMModbusBase::Endian_swap(uint16_t x) {
+    return (x >> 8) | (x << 8);
+}
+
+//---------------------------------------------------------------------------
+void TMModbusBase::Init_float(float &x, uint8_t *buffer, int &offset) {
+    uint8_t temp[4];
+    temp[0] = buffer[offset + 1];
+    temp[1] = buffer[offset + 0];
+    temp[2] = buffer[offset + 3];
+    temp[3] = buffer[offset + 2];
+    x = *(float *) (&temp);
+    offset += 4;
+}
+
+//---------------------------------------------------------------------------
+void TMModbusBase::Init_int(int &x, uint8_t *buffer, int &offset) {
+    uint8_t temp[4];
+    temp[0] = buffer[offset + 1];
+    temp[1] = buffer[offset + 0];
+    temp[2] = buffer[offset + 3];
+    temp[3] = buffer[offset + 2];
+    x = *(int *) (&temp);
+    offset += 4;
+}
+
+//---------------------------------------------------------------------------
+void TMModbusBase::Init_tm(tm &x, uint8_t *buffer, int &offset) {
+    uint8_t hi_byte = two_nibble_to_byte(buffer[offset + 6]);
+    uint8_t low_byte = two_nibble_to_byte(buffer[offset + 7]);
+    x.tm_year = two_byte_to_short(hi_byte, low_byte) - 1900;
+    x.tm_mon = two_nibble_to_byte(buffer[offset + 4]) - 1;
+    x.tm_mday = two_nibble_to_byte(buffer[offset + 5]);
+    x.tm_hour = two_nibble_to_byte(buffer[offset + 2]);
+    x.tm_min = two_nibble_to_byte(buffer[offset + 3]);
+    x.tm_sec = two_nibble_to_byte(buffer[offset + 0]);
+    offset += 8;
 }
 //---------------------------------------------------------------------------
-void TMModbusBase::Init_float(float & x, uint8_t* buffer, int &offset)
-{
-  uint8_t temp[4];
-  temp[0] = buffer[offset+1];
-  temp[1] = buffer[offset+0];
-  temp[2] = buffer[offset+3];
-  temp[3] = buffer[offset+2];
-  x = *(float*)(&temp);
-  offset += 4;
+MSTRING TMModbusBase::tm_to_string(tm x, MSTRING format) {
+    char timestamp[100];
+    strftime(timestamp, 100, format.c_str(), &x);
+    return MSTRING(timestamp);
 }
+
 //---------------------------------------------------------------------------
-void TMModbusBase::Init_int(int & x, uint8_t* buffer, int &offset)
-{
-  uint8_t temp[4];
-  temp[0] = buffer[offset+1];
-  temp[1] = buffer[offset+0];
-  temp[2] = buffer[offset+3];
-  temp[3] = buffer[offset+2];
-  x = *(int*)(&temp);
-  offset +=4;
+uint8_t TMModbusBase::two_nibble_to_byte(uint8_t two_nibble) {
+    return ((two_nibble >> 4) * 10) + (two_nibble & 15);
 }
+
 //---------------------------------------------------------------------------
-void TMModbusBase::Init_tm(tm & x, uint8_t* buffer, int &offset)
-{
-  uint8_t hi_byte  = two_nibble_to_byte(buffer[offset+6]);
-  uint8_t low_byte = two_nibble_to_byte(buffer[offset+7]);
-  x.tm_year  = two_byte_to_short(hi_byte,low_byte)-1900;
-  x.tm_mon   = two_nibble_to_byte(buffer[offset+4])-1;
-  x.tm_mday  = two_nibble_to_byte(buffer[offset+5]);
-  x.tm_hour  = two_nibble_to_byte(buffer[offset+2]);
-  x.tm_min   = two_nibble_to_byte(buffer[offset+3]);
-  x.tm_sec   = two_nibble_to_byte(buffer[offset+0]);
-  offset += 8;
+short TMModbusBase::two_byte_to_short(uint8_t &hi_byte, uint8_t &low_byte) {
+    short temp = hi_byte * 100 + low_byte;
+    hi_byte = temp;
+    low_byte = temp >> 8;
+    return temp;
 }
+
 //---------------------------------------------------------------------------
-MSTRING TMModbusBase::tm_to_string(tm x, MSTRING format)
-{
-  char timestamp[100];
-  strftime (timestamp,100,format.c_str(),&x);
-  return MSTRING(timestamp);
-}
-//---------------------------------------------------------------------------
-uint8_t TMModbusBase::two_nibble_to_byte(uint8_t two_nibble)
-{
-  return ((two_nibble >> 4) * 10) + (two_nibble & 15);
-}
-//---------------------------------------------------------------------------
-short TMModbusBase::two_byte_to_short(uint8_t &hi_byte, uint8_t &low_byte)
-{
-  short temp = hi_byte*100 + low_byte;
-  hi_byte    = temp;
-  low_byte   = temp>>8;
-  return temp;
-}
-//---------------------------------------------------------------------------
-void TMModbusBase::Init_unsigned_short(uint16_t &x, uint8_t* buffer, int &offset)
-{
-  uint8_t temp[2];
-  temp[0]=buffer[offset+1];
-  temp[1]=buffer[offset+0];
-  x = *(uint16_t*)(&temp);
-  offset += 2;
+void TMModbusBase::Init_unsigned_short(uint16_t &x, uint8_t *buffer, int &offset) {
+    uint8_t temp[2];
+    temp[0] = buffer[offset + 1];
+    temp[1] = buffer[offset + 0];
+    x = *(uint16_t *) (&temp);
+    offset += 2;
 }
 

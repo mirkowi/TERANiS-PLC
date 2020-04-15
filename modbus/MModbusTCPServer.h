@@ -19,6 +19,7 @@ private:
 #ifndef ARDUINO
     timeval lastErrorTime;
 #endif
+
     uint16_t word(uint8_t h, uint8_t l) { return ((uint16_t) h) << 8 | l; }
 
     /// Empfang fuer einen Client bearbeiten. Liefert true, wenn ein Telegramm bearbeitet wurde.
@@ -31,7 +32,7 @@ public:
 
     TMModbusTCPServer() : mbport(502) {
 #ifndef ARDUINO
-        lastErrorTime.tv_sec=0;
+        lastErrorTime.tv_sec = 0;
 #endif
     };
 
@@ -40,7 +41,7 @@ public:
     void run();
 
     void end();
-    
+
     ~TMModbusTCPServer() { end(); };
 };
 

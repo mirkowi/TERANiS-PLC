@@ -84,9 +84,9 @@ void TTCPSocket::connect() {
         int res = select(descriptor + 1, NULL, &writeset, NULL, &tv);
         if (res < 0) {
 #ifdef _WIN32
-            if (WSAGetLastError()!=WSAEINPROGRESS)
+            if (WSAGetLastError() != WSAEINPROGRESS)
 #else
-            if (errno != EINTR && errno != EAGAIN)
+                if (errno != EINTR && errno != EAGAIN)
 #endif
             {
                 // Fehler
@@ -149,9 +149,9 @@ void TTCPSocket::connect() {
         ready = true;
     } else {
 #ifdef _WIN32
-        if (WSAGetLastError()==WSAEWOULDBLOCK)
+        if (WSAGetLastError() == WSAEWOULDBLOCK)
 #else
-        if (errno == EINPROGRESS)
+            if (errno == EINPROGRESS)
 #endif
         {
             // Busy anzeigen bis Verbindung aufgebaut
@@ -181,7 +181,7 @@ int TTCPSocket::recv(void *buffer, unsigned int bufferlen) {
     int result = ::recv(this->descriptor, (char *) buffer, bufferlen, 0);
 #ifdef _WIN32
     // Wenn nur keine Daten, dann einfach 0 zurueckliefern
-    if (result==SOCKET_ERROR && WSAGetLastError()==WSAEWOULDBLOCK) return 0;
+    if (result == SOCKET_ERROR && WSAGetLastError() == WSAEWOULDBLOCK) return 0;
 #else
     // Wenn nur keine Daten, dann einfach 0 zurueckliefern
     if (result < 0 && (errno == EAGAIN || errno == EWOULDBLOCK)) return 0;
@@ -252,7 +252,7 @@ int TTCPSocket::recvFixed(char *buffer, unsigned int bufferlen, int wait_time, i
 bool TTCPSocket::create() {
     descriptor = socket(AF_INET, SOCK_STREAM, 0);
 #ifdef _WIN32
-    if(this->descriptor==INVALID_SOCKET) return false;
+    if (this->descriptor == INVALID_SOCKET) return false;
 #else
     if (descriptor < 0) return false;
 #endif
@@ -275,7 +275,7 @@ bool TTCPSocket::isConnected() {
     char buf;
     int flags =
 #ifdef _WIN32
-    MSG_PEEK
+            MSG_PEEK
 #else
     MSG_PEEK | MSG_DONTWAIT
 #endif
@@ -290,11 +290,11 @@ bool TTCPSocket::available() {
     char buf;
     int flags =
 #ifdef _WIN32
-     MSG_PEEK
+            MSG_PEEK
 #else
-     MSG_PEEK | MSG_DONTWAIT
+    MSG_PEEK | MSG_DONTWAIT
 #endif
-     ;
+    ;
     int result = ::recv(descriptor, &buf, 1, flags);
     if (result > 0) return true;
     return false;
@@ -312,7 +312,7 @@ void TTCPSocket::setNonblocking() {
     // Socket in nonblocking schalten
 #ifdef _WIN32
     unsigned long ctl = 1;
-    if (ioctlsocket(descriptor,FIONBIO,&ctl)) return;
+    if (ioctlsocket(descriptor, FIONBIO, &ctl)) return;
 #else
     int flags;
     if ((flags = fcntl(descriptor, F_GETFL, 0)) < 0) return;

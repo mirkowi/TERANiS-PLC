@@ -3,8 +3,11 @@
 //
 
 #include "TCPServer.h"
+
 #ifdef _WIN32
+
 #include <io.h>
+
 #else
 
 #include <sys/io.h>
@@ -14,7 +17,7 @@
 #endif
 
 TTCPServer::TTCPServer(std::string ipport) : TTCPSocket() {
-    Hostport2HostPort(ipport,ip,port);
+    Hostport2HostPort(ipport, ip, port);
 }
 
 bool TTCPServer::Bind() {
@@ -23,14 +26,14 @@ bool TTCPServer::Bind() {
     struct sockaddr_in my_addr;
     memset(&my_addr, 0, sizeof(struct sockaddr_in));
     my_addr.sin_family = AF_INET;
-    my_addr.sin_port = htons (port);
-    my_addr.sin_addr.s_addr = htonl (INADDR_ANY);
+    my_addr.sin_port = htons(port);
+    my_addr.sin_addr.s_addr = htonl(INADDR_ANY);
     return (bind(descriptor, (struct sockaddr *) &my_addr,
-             sizeof(struct sockaddr_in)) != -1);
+                 sizeof(struct sockaddr_in)) != -1);
 }
 
 bool TTCPServer::Bind(std::string ipport) {
-    Hostport2HostPort(ipport,ip,port);
+    Hostport2HostPort(ipport, ip, port);
     return Bind();
 }
 
@@ -57,10 +60,10 @@ bool TTCPServer::Accept(TTCPClient &client) {
     memset(&peer_addr, 0, sizeof(struct sockaddr_in));
     int cfd = accept(descriptor, (struct sockaddr *) &peer_addr,
                      &peer_addr_size);
-    if (cfd<0) {
+    if (cfd < 0) {
         // Bei diesen Ergebnissen ist momentan keine neue Client-Verbindung vorhanden
 #ifdef _WIN32
-        if (WSAGetLastError()==WSAEWOULDBLOCK) return false;
+        if (WSAGetLastError() == WSAEWOULDBLOCK) return false;
 #else
         if (errno == EAGAIN || errno == EWOULDBLOCK) return false;
 #endif

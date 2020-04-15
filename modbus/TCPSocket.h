@@ -19,6 +19,7 @@ protected:
     TTCPSocket(const TTCPSocket &other) {};
 public:
     SOCKET getDescriptor() const { return descriptor; }
+
     void setDescriptor(SOCKET descriptor);;
 
     /// liefert true wenn Verbindung aufgebaut
