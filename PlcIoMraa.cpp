@@ -14,16 +14,6 @@ mraa_gpio_context di8 = NULL;
 mraa_gpio_context di9 = NULL;
 mraa_gpio_context led = NULL;
 
-PlcIoMraa::PlcIoMraa(unsigned int _inputLength,
-                     unsigned int _outputLength,
-                     unsigned int _flagsLength,
-                     unsigned int _systemFlagsLength)
-        : PlcIo(_inputLength,
-                _outputLength,
-                _flagsLength,
-                _systemFlagsLength) {
-}
-
 mraa_gpio_context initPin(int pin, mraa_gpio_dir_t dir) {
     mraa_gpio_context context = mraa_gpio_init(pin);
     if (!context) {
@@ -63,7 +53,7 @@ void PlcIoMraa::read() {
     IX(1, 1) = di9 && mraa_gpio_read(di9);
 }
 
-void PlcIoMraa::write(const) {
+void PlcIoMraa::write() {
     mraa_gpio_write(led, I(uint16_t, 0) != 0);//QX(0,0));
 }
 
