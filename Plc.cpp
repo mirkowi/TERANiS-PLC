@@ -49,7 +49,9 @@ void Plc::setCooldownCycleTime(unsigned int _cooldownCycleTime) {
 
 void Plc::begin() {
     // Bei begin() bleibt der Speicher im Zustand in dem er ist
-
+    lastCycle = std::chrono::system_clock::now();
+    startTime = std::chrono::system_clock::now();
+    S_usTicks = 0;
     io->begin();
     task->begin();
 
@@ -73,6 +75,13 @@ bool Plc::cycle() {
 
     std::this_thread::sleep_for(std::chrono::milliseconds(cooldownCycleTime));
 
+    plc_timepoint now = std::chrono::system_clock::now();
+
+    S_usTicks = ((now - startTime).count() * std::micro::den) / plc_timepoint::duration::period::den;
+    S_cycleActMs = task->getCycleActMs();
+    S_minCycleActMs = task->getMinCycleActMs();
+    S_maxCycleActMs = task->getMaxCycleActMs();
+
     try {
         io->read();
 
@@ -85,6 +94,8 @@ bool Plc::cycle() {
         state = ERROR;
         return false;
     }
+
+    lastCycle = now;
 }
 
 PlcTask *Plc::getTask() const {

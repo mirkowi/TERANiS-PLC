@@ -58,6 +58,14 @@ private:
      */
     unsigned int cooldownCycleTime;
     /**
+     * Zeitpunkt des letzten Zyklus
+     */
+    plc_timepoint lastCycle;
+    /**
+     * Zeitpunkt des Aufrufs von begin()
+     */
+    plc_timepoint startTime;
+    /**
      * SPS-Zustand
      */
     State state;
