@@ -9,7 +9,7 @@ include_directories(modbus)
 
 set(SOURCES main.cpp)
 
-add_compile_definitions(ENVIRONMENT=${env})
+add_definitions(-DENVIRONMENT=${env})
 
 if ("${env}" STREQUAL "")
     set(env windows)
@@ -19,21 +19,20 @@ message(STATUS Environment=${env})
 
 if ("${env}" MATCHES "mraa")
     set(SOURCES ${SOURCES} PlcIoMraa.cpp)
-    add_compile_definitions(ENV_MRAA)
+    add_definitions(-DENV_MRAA)
     link_libraries(mraa)
 endif ()
 
 if ("${env}" MATCHES "revpi")
     set(SOURCES ${SOURCES} PlcIoRevPi.cpp)
-    add_compile_definitions(ENV_REVPI)
+    add_definitions(-DENV_REVPI)
 endif ()
 
 if ("${env}" MATCHES "windows")
-    add_compile_definitions(ENV_WINDOWS)
+    add_definitions(-DENV_WINDOWS)
+    link_libraries(ws2_32.lib)
     # todo: where to map I/O to?
 endif ()
-
-link_libraries(ws2_32.lib)
 
 set(SOURCES ${SOURCES} modbus/MModbusTCPServer.cpp)
 set(SOURCES ${SOURCES} modbus/MRegExp.cpp)
