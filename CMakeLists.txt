@@ -12,7 +12,7 @@ set(SOURCES main.cpp)
 add_definitions(-DENVIRONMENT=${env})
 
 if ("${env}" STREQUAL "")
-    set(env windows)
+    set(env mraa)
 endif ()
 
 message(STATUS Environment=${env})
