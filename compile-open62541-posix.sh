@@ -1,0 +1,9 @@
+#!/bin/bash
+cd opcua/open62541
+mkdir build
+cd build
+cmake .. -G "Unix Makefiles" -DUA_ARCHITECTURE_POSIX=1 -DUA_ENABLE_AMALGAMATION=ON -DUA_ENABLE_SUBSCRIPTIONS=ON -DUA_ENABLE_NODEMANAGEMENT=ON -DUA_ENABLE_IMMUTABLE_NODES=ON -DUA_ENABLE_MULTITHREADING=ON -DUA_ENABLE_DISCOVERY=ON
+make -j
+copy "open62541.c" "../.."
+copy "open62541.h" "../.."
+cd ../../..
