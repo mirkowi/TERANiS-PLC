@@ -5,7 +5,6 @@
 #include <iostream>
 
 void Cycle() {
-    // testweise ein Zyklenzaehler
+    // Standardimplementierung: Debug-Zykluszaehler inkrementieren
     F(uint32_t, 30)++;
-    std::cout << F(uint32_t, 30) << std::endl;
 }

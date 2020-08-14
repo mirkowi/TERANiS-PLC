@@ -1,13 +1,19 @@
 #include <iostream>
 #include <csignal>
 #include <cstring>
+#include <cstdlib>
 #include "Plc.h"
+
 #include "TeranisTask.h"
 
 #include "MModbusTCPServer.h"
+#include "OpcuaServer.h"
+#include "opcua_configuration.h"
 
 #if defined(ENV_MRAA)
+
 #include "PlcIoMraa.h"
+
 #elif defined(ENV_REVPI)
 #include "PlcIoRevPi.h"
 #elif defined(ENV_WINDOWS)
@@ -27,11 +33,12 @@ int main(int argc, char *argv[]) {
         signal(SIGTERM, signalSigterm);
 
         TMModbusTCPServer modbusTcpServer;
+        OpcuaServer opcuaServer;
 
         // TERANIS Code laden
         PlcTask *task = new TeranisTask();
         task->setMinCycleSetMs(1);
-        task->setMaxCycleSetMs(100); // sollte größer als plc.getCooldownCycleTime() sein
+        task->setMaxCycleSetMs(250); // sollte größer als plc.getCooldownCycleTime() sein
 
         // PLC vorbereiten
         PlcIo *io;
@@ -55,14 +62,22 @@ int main(int argc, char *argv[]) {
         modbusTcpServer.begin();
         plc.begin();
 
+        configureOpcuaServer(&opcuaServer);
+        std::set<OpcuaVariable*> opcuaVariables;
+        configureOpcuaVariables(opcuaVariables);
+        opcuaServer.addVariables(opcuaVariables);
+        opcuaServer.begin();
+
         // PLC-Zyklus so lange ausfuehren bis SIGTERM eintrifft, oder Exception
         while (!terminate) {
             plc.cycle();
             modbusTcpServer.run();
+            opcuaServer.cycle();
         }
 
         plc.end();
         modbusTcpServer.end();
+        opcuaServer.end();
 
         return 0;
     }

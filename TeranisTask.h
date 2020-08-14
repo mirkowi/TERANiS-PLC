@@ -14,7 +14,8 @@ public:
 protected:
 
     /// Tatsächliche Implementierung des Task
-    virtual void runImpl();
+    void runImpl() override;
+
 };
 
 #endif
