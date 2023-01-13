@@ -88,3 +88,20 @@ Der Server kann in der Datei `opcua/opcua_configuration.cpp` über die Funktion 
 Die einzelnen, veröffentlichten Variablen können in `void configureOpcuaVariables(std::set<OpcuaVariable *> &vars)` definiert werden.
 
 **Dort ist standardmäßig `F(uint32,30)` unter dem Namen `DebugPlcCycleCount` eingetragen.**
+
+## Übersetzung und Installation unter WSL2
+
+Um die Software unter WSL2 zu kompilieren, muss CMAKE sowie MRAA installiert werden. 
+Außerdem muss open62541 heruntergeladen und übersetzt werden.
+
+Für Ubuntu:
+```
+sudo add-apt-repository ppa:mraa/mraa
+sudo apt-get update
+sudo apt-get install -y \
+  cmake \
+  libmraa2 libmraa-dev libmraa-java python-mraa python3-mraa mraa-tools
+
+./download-open62541.sh
+./compile-open62541-posix.sh
+```
