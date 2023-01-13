@@ -23,6 +23,7 @@ if ("${env}" MATCHES "mraa")
     add_definitions(-DENV_MRAA)
     add_definitions(-DUA_ARCHITECTURE_POSIX)
     link_libraries(mraa)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
 endif ()
 
 if ("${env}" MATCHES "revpi")
