@@ -38,9 +38,24 @@ void PlcIoMraa::begin() {
     di7 = initPin(11, MRAA_GPIO_IN);
     di8 = initPin(12, MRAA_GPIO_IN);
     //di9 = initPin(13,MRAA_GPIO_IN);
+
+    ioInitialized = true 
+        && led // != NULL
+        && di0 // != NULL
+        && di1 // != NULL
+        && di2 // != NULL
+        && di3 // != NULL
+        && di4 // != NULL
+        && di5 // != NULL
+        && di6 // != NULL
+        && di7 // != NULL
+        && di8 // != NULL
+        //&& di9 // != null
+        ;
 }
 
 void PlcIoMraa::read() {
+    if(!ioInitialized){return;}
     IX(0, 0) = di0 && mraa_gpio_read(di0);
     IX(0, 1) = di1 && mraa_gpio_read(di1);
     IX(0, 2) = di2 && mraa_gpio_read(di2);
@@ -54,21 +69,24 @@ void PlcIoMraa::read() {
 }
 
 void PlcIoMraa::write() {
+    if(!ioInitialized){return;}
     mraa_gpio_write(led, I(uint16_t, 0) != 0);//QX(0,0));
 }
 
 void PlcIoMraa::end() {
-    mraa_gpio_close(di0);
-    mraa_gpio_close(di1);
-    mraa_gpio_close(di2);
-    mraa_gpio_close(di3);
-    mraa_gpio_close(di4);
-    mraa_gpio_close(di5);
-    mraa_gpio_close(di6);
-    mraa_gpio_close(di7);
-    mraa_gpio_close(di8);
-    mraa_gpio_close(di9);
-    mraa_gpio_close(led);
+    if(ioInitialized) {
+        mraa_gpio_close(di0);
+        mraa_gpio_close(di1);
+        mraa_gpio_close(di2);
+        mraa_gpio_close(di3);
+        mraa_gpio_close(di4);
+        mraa_gpio_close(di5);
+        mraa_gpio_close(di6);
+        mraa_gpio_close(di7);
+        mraa_gpio_close(di8);
+        mraa_gpio_close(di9);
+        mraa_gpio_close(led);
+    }
     mraa_deinit();
 }
 

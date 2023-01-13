@@ -1,4 +1,5 @@
 #include <iostream>
+#include <string>
 #include <csignal>
 #include <cstring>
 #include <cstdlib>
@@ -31,6 +32,10 @@ void signalSigterm(int signum) {
 int main(int argc, char *argv[]) {
     try {
         signal(SIGTERM, signalSigterm);
+        if(std::string(std::getenv("TERANIS_PLC_STOP_ON_SIGINT")) == "true") {
+            // quit on CTRL+C in tty
+            signal(SIGINT, signalSigterm); 
+        }
 
         TMModbusTCPServer modbusTcpServer;
         OpcuaServer opcuaServer;

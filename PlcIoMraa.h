@@ -25,6 +25,8 @@ public:
     /// Override
     /// IO-System schliessen
     void end();
+private:
+    bool ioInitialized = false;
 };
 
 
