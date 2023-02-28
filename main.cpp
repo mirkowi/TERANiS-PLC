@@ -32,7 +32,7 @@ void signalSigterm(int signum) {
 int main(int argc, char *argv[]) {
     try {
         signal(SIGTERM, signalSigterm);
-        if(std::string(std::getenv("TERANIS_PLC_STOP_ON_SIGINT")) == "true") {
+        if(std::getenv("TERANIS_PLC_STOP_ON_SIGINT") != nullptr && std::string(std::getenv("TERANIS_PLC_STOP_ON_SIGINT")) == "true") {
             // quit on CTRL+C in tty
             signal(SIGINT, signalSigterm); 
         }
@@ -85,6 +85,9 @@ int main(int argc, char *argv[]) {
         opcuaServer.end();
 
         return 0;
+    }
+    catch(const std::exception& e) {
+        std::cerr << e.what() << std::endl;
     }
     catch (...) {
         std::cerr << " Es ist ein unbekannter Fehler aufgetreten." << std::endl;
